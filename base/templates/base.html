@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %} {% load staticfiles %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <title>Babyrouletten</title>
+    <style>
+        body {
+            font-size: 16px;
+            line-height: 1.6em;
+        }
+
+        .round {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        a {
+            color: rgb(59, 194, 186);
+        }
+
+        .btn-primary,
+        .btn-primary:hover {
+            background-color: rgb(59, 194, 186);
+            border: none;
+        }
+
+        .credits {
+            text-align: center;
+            margin: 0 0 60px 0;
+            font-size: 18px;
+        }
+
+        h1 {
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .logo {
+            display: block;
+            margin: 50px auto;
+        }
+
+        body {
+            background-color: #6b92b9;
+        }
+
+        .me a {
+            color: black !important;
+        }
+
+        footer {
+            height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebar">
+        {% block navbar %}
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">Babyrouletten</a>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Manual</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Mine væddemål</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Pointtavle</a>
+                </li>
+            </ul>
+            <div class="form-inline my-2 my-lg-0">
+                <ul class="navbar-nav mr-auto">
+                    <a href="#">{{request.user}} // Resterende jetoner: {{request.user.bettor.credits}}</a>
+                </ul>
+            </div>
+        </nav>
+        {% endblock %}
+    </div>
+
+    <div class="container">
+        <div class="row">
+            {% block logo %}
+            <img class="logo" src="{% static "babyroulette.jpg" %}" width="80%" /> {% endblock %}
+        </div>
+        {% block content %}{% endblock %}
+    </div>
+    <footer>
+
+    </footer>
+</body>
+
+</html>

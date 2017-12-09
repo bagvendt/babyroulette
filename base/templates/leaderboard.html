@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block content %}
+<h1>Pointtavle</h1>
+<table class="table table-striped">
+    <tr>
+        <td>Brugernavn</td>
+        <td>Jetoner</td>
+    </tr>
+    {% for bettor in bettors %}
+    <tr>
+        <td>
+            <a href="/bets/{{bettor.id}}">{{bettor.user}}</a>
+        </td>
+        <td>{{bettor.credits}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
