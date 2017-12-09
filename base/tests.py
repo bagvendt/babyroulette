@@ -1,14 +1,18 @@
-from django.test import TestCase
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-from .models import *
+from django.test import TestCase, override_settings
+from .models import (Bet, Bettor, Transaction, Turn)
 
 
+@override_settings(STARTING_CREDITS=1000)
 class BaseTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create(username="a")
         t = Turn.objects.create(name="1", active=True)
-        self.b1 = Bet.objects.create(description="fail", odds=2.2, did_happen=False, turn=t)
-        self.b2 = Bet.objects.create(description="win", odds=2.2, did_happen=True, turn=t)
+        self.b1 = Bet.objects.create(
+            description="fail", odds=2.2, did_happen=False, turn=t)
+        self.b2 = Bet.objects.create(
+            description="win", odds=2.2, did_happen=True, turn=t)
 
     def test_credits_baseline(self):
         self.assertTrue(self.user.bettor.credits, 1000)
@@ -27,7 +31,8 @@ class BaseTestCase(TestCase):
 
     def test_credits_invalid_wager(self):
         with self.assertRaises(ValidationError):
-            Transaction(bet=self.b2, bettor=self.user.bettor, wager=1001).clean()
+            Transaction(bet=self.b2, bettor=self.user.bettor,
+                        wager=1001).clean()
 
     def test_credits_invalid_wager_two(self):
         with self.assertRaises(ValidationError):
@@ -37,7 +42,8 @@ class BaseTestCase(TestCase):
 
     def test_credits_invalid_wager_invalid_turn(self):
         t = Turn.objects.create(name="2", active=False)
-        b3 = Bet.objects.create(description="win", odds=2.2, did_happen=True, turn=t)
+        b3 = Bet.objects.create(
+            description="win", odds=2.2, did_happen=True, turn=t)
         with self.assertRaises(ValidationError):
             Transaction(bet=b3, bettor=self.user.bettor, wager=1).clean()
 
