@@ -2,11 +2,10 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from django import forms
-from adminsortable2.admin import SortableInlineAdminMixin
 from .models import (Bet, Bettor, Turn, Transaction)
 
 
-class BetInline(SortableInlineAdminMixin, admin.TabularInline):  # or admin.StackedInline
+class BetInline(admin.TabularInline):
     model = Bet
 
 
