@@ -10,19 +10,25 @@ class BaseTestCase(TestCase):
         self.user = User.objects.create(username="a")
         t = Turn.objects.create(name="1", active=True)
         self.b1 = Bet.objects.create(
-            description="fail", odds=2.2, did_happen=False, turn=t)
+            description="fail", odds=2, did_happen=False, turn=t
+        )
         self.b2 = Bet.objects.create(
-            description="win", odds=2.2, did_happen=True, turn=t)
+            description="win", odds=4, did_happen=True, turn=t
+        )
 
     def test_credits_baseline(self):
         self.assertTrue(self.user.bettor.credits, 1000)
 
-    def test_credits_win(self):
-        Transaction(bet=self.b1, bettor=self.user.bettor, wager=500).save()
-        self.assertTrue(self.user.bettor.credits, 1100)
+    def test_credits_win_one(self):
+        Transaction(bet=self.b2, bettor=self.user.bettor, wager=1000).save()
+        self.assertTrue(self.user.bettor.credits, 2000)
+
+    def test_credits_win_two(self):
+        Transaction(bet=self.b2, bettor=self.user.bettor, wager=500).save()
+        self.assertTrue(self.user.bettor.credits, 500+500*2)
 
     def test_credits_loss_one(self):
-        Transaction(bet=self.b2, bettor=self.user.bettor, wager=500).save()
+        Transaction(bet=self.b1, bettor=self.user.bettor, wager=500).save()
         self.assertTrue(self.user.bettor.credits, 500)
 
     def test_credits_loss_two(self):
@@ -31,8 +37,10 @@ class BaseTestCase(TestCase):
 
     def test_credits_invalid_wager(self):
         with self.assertRaises(ValidationError):
-            Transaction(bet=self.b2, bettor=self.user.bettor,
-                        wager=1001).clean()
+            Transaction(
+                bet=self.b2,
+                bettor=self.user.bettor,
+                wager=1001).clean()
 
     def test_credits_invalid_wager_two(self):
         with self.assertRaises(ValidationError):

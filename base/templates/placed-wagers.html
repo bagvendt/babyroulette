@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Væddemål for {{object.user}}</h1>
+<h2>{{ object.user }} har i alt <b>{{ object.credits }}</b> jetoner</h2>
+<table class="table table-striped">
+  <tr>
+    <td>Runde #</td>
+    <td>Væddemål</td>
+    <td>Odds</td>
+    <td>Indsats</td>
+    <td>Resultat</td>
+  </tr>
+{% for transaction in object.transaction_set.all %}
+  <tr>
+    {% if transaction.bet %}
+      <td>{{ transaction.bet.turn.id }}</td>
+      <td>{{ transaction.bet.description }}</td>
+      <td>{{ transaction.bet.odds }}</td>
+      <td>{{ transaction.wager }}</td>
+      <td>
+      {% with transaction.result as result %}
+        {% if result %}
+          {{ result|floatformat }}
+        {% else %}
+          -
+        {% endif %}
+        {% endwith %}
+      </td>
+      {% else %}
+          <td>-</td>
+          <td>{{ transaction.wager }} startjetoner</td>
+          <td>1,0</td>
+          <td>{{ transaction.wager }}</td>
+          <td/>{{ transaction.wager }}</td>
+      {% endif %}
+  </tr>
+{% endfor %}
+</table>
+{% endblock %}

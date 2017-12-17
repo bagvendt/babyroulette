@@ -8,9 +8,9 @@
     {% for bettor in bettors %}
     <tr>
         <td>
-            <a href="/bets/{{bettor.id}}">{{bettor.user}}</a>
+            <a href="{% url 'transactions' pk=bettor.id %}">{{bettor.user}}</a>
         </td>
-        <td>{{bettor.credits}}</td>
+        <td>{{ bettor.annotated_credits|floatformat }}</td>
     </tr>
     {% endfor %}
 </table>

@@ -1,0 +1,15 @@
+{% extends "base.html" %} {% block content %}
+<h1>Sats jetoner på {{ bet.description }} til odds {{ bet.odds }}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <input type="number" placeholder="Indsats"name="wager" id="id_wager" required="" min=0 max={{ user.bettor.credits }} class="col-6" />
+            <button type="submit" class="btn btn-primary col-6">Placér satsning</button>
+        </div>
+    </form>
+    {{ form.errors.wager }}
+
+</div>
+
+{% endblock %}

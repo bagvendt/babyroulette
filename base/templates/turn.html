@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="round">{{ object.name }}</h1>
+        {% if not object.active %}
+          <h2>Denne runde er ikke længere aktiv</h2>
+        {% endif %}
+        <p class="credits">Du har <b>{{ user.bettor.credits }}</b> jetoner tilbage at spille for</p>
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Væddemål</th>
+                <th>Odds</th>
+                <th>Sats</th>
+              </tr>
+            </thead>
+            <tbody>
+          {% for bet in object.bet_set.all %}
+          <tr>
+              <th>{{ bet.description }}</th>
+              <th>{{ bet.odds }}</th>
+              <th>{% if object.active %}<a class="btn btn-primary btn-block" href="{% url 'place-bet' pk=bet.pk %}">Sats</a>{% endif %}</th>
+            </a>
+          </tr>
+
+          {% endfor %}
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

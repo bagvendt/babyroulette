@@ -24,10 +24,10 @@ class Bet(models.Model):
     order = models.PositiveIntegerField(default=0, blank=False, null=False)
 
     def __str__(self):
-        return '{} til odds {}'.format(self.description, self.odds)
+        return '{} til odds {} i runde {}'.format(self.description, self.odds, self.turn)
 
     class Meta:
-        ordering = ('order',)
+        ordering = ('turn', 'order',)
 
 
 class Turn(models.Model):
@@ -41,38 +41,51 @@ class Turn(models.Model):
 class Transaction(models.Model):
     created = models.DateTimeField(auto_now_add=True, blank=True)
     bettor = models.ForeignKey('Bettor', on_delete=models.CASCADE)
-    bet = models.ForeignKey(
-        'Bet', on_delete=models.CASCADE, null=True, blank=True)
+    bet = models.ForeignKey('Bet', on_delete=models.CASCADE, null=True, blank=True)
     wager = models.PositiveIntegerField()
 
+    @property
+    def result(self):
+        bet = getattr(self, "bet")
+        if bet and not bet.turn.active:
+            if bet.did_happen:
+                return bet.odds * self.wager
+            return self.wager * -1
+        return None
+
     def clean(self):
-        FAILTEXT = 'Det kan ikke lade sig gøre'
         if self.bet:
             if not self.bet.turn.active:
-                raise ValidationError({'bet': FAILTEXT})
+                raise ValidationError({'bet': "Runden er ikke aktiv"})
             if self.wager > self.bettor.credits:
-                raise ValidationError({'wager': FAILTEXT})
+                raise ValidationError({'wager': "Indsatsen er ikke mulig"})
 
     def __str__(self):
-        return "{} satsede {} jetoner på {}".format(
-            self.bettor.user.username, self.wager, getattr(
-                self.bet, 'description', None)
+        if not self.bet:
+            return "{} Startjetoner : {}".format(
+                self.bettor.user.username,
+                self.wager,
+            )
+        return "{} satsede {} jetoner på {}. Runde: '{}'".format(
+            self.bettor.user.username,
+            self.wager,
+            self.bet.description,
+            self.bet.turn,
         )
 
     class Meta:
-        ordering = ('-created',)
+        ordering = ('bet__turn',)
 
 
 class BettorQuerySet(models.QuerySet):
     def with_credits(self):
         return self.annotate(
-            _credits=Sum(
+            annotated_credits=Sum(
                 Case(
                     When(
                         Q(transaction__bet__isnull=False) &
                         Q(transaction__bet__did_happen=True),
-                        then=F('transaction__wager') *
-                        F('transaction__bet__odds') - F('transaction__wager'),
+                        then=F('transaction__wager') * F('transaction__bet__odds'),
                     ),
                     When(
                         Q(transaction__bet__isnull=False) &
@@ -91,7 +104,7 @@ class BettorQuerySet(models.QuerySet):
 
 class BettorManager(models.Manager):
     def get_queryset(self):
-        return BettorQuerySet(self.model, using=self._db).with_credits().order_by('-_credits')
+        return BettorQuerySet(self.model, using=self._db).with_credits().order_by('-annotated_credits')
 
 
 class Bettor(models.Model):
@@ -100,8 +113,10 @@ class Bettor(models.Model):
 
     @property
     def credits(self):
-        return math.floor(Bettor.objects.filter(pk=self.pk).with_credits().first()._credits)
+        return math.floor(Bettor.objects.filter(pk=self.pk).with_credits().first().annotated_credits)
 
+    def __str__(self):
+        return self.user.username
 
 def create_bettor(sender, instance, created, **kwargs):
     if created:
