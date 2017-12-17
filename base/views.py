@@ -11,7 +11,6 @@ from django.core.exceptions import (
     SuspiciousOperation
 )
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect
 from django.urls import reverse
 from base import models
 

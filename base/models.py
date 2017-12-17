@@ -58,7 +58,10 @@ class Transaction(models.Model):
             if not self.bet.turn.active:
                 raise ValidationError({'bet': "Runden er ikke aktiv"})
             if self.wager > self.bettor.credits:
-                raise ValidationError({'wager': "Indsatsen er ikke mulig"})
+                raise ValidationError({'wager': "Du har ikke nok jetoner til at placere denne satsning"})
+            if self.wager <= 0:
+                raise ValidationError({'wager': "Nej"})
+
 
     def __str__(self):
         if not self.bet:
@@ -74,7 +77,7 @@ class Transaction(models.Model):
         )
 
     class Meta:
-        ordering = ('bet__turn',)
+        ordering = ('-created',)
 
 
 class BettorQuerySet(models.QuerySet):
@@ -117,6 +120,7 @@ class Bettor(models.Model):
 
     def __str__(self):
         return self.user.username
+
 
 def create_bettor(sender, instance, created, **kwargs):
     if created:
