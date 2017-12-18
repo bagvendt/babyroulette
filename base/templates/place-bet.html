@@ -4,7 +4,7 @@
     <form method="POST">
         {% csrf_token %}
         <div class="row">
-            <input type="number" placeholder="Indsats" name="wager" id="id_wager" required="" min=1 max={{ user.bettor.credits }} class="col-6" />
+            <input type="number" placeholder="Skriv din indsats her" name="wager" id="id_wager" required="" min=1 max={{ user.bettor.credits }} class="col-6" />
             <button type="submit" class="btn btn-primary col-6">Placér satsning</button>
         </div>
     </form>
