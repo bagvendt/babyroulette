@@ -3,8 +3,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-
-
 from django.db.models import (
     Case,
     FloatField,
@@ -62,7 +60,6 @@ class Transaction(models.Model):
             if self.wager <= 0:
                 raise ValidationError({'wager': "Nej"})
 
-
     def __str__(self):
         if not self.bet:
             return "{} Startjetoner : {}".format(
@@ -88,7 +85,7 @@ class BettorQuerySet(models.QuerySet):
                     When(
                         Q(transaction__bet__isnull=False) &
                         Q(transaction__bet__did_happen=True),
-                        then=F('transaction__wager') * F('transaction__bet__odds'),
+                        then=F('transaction__wager') * F('transaction__bet__odds') - F('transaction__wager'),
                     ),
                     When(
                         Q(transaction__bet__isnull=False) &

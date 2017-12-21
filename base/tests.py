@@ -17,23 +17,28 @@ class BaseTestCase(TestCase):
         )
 
     def test_credits_baseline(self):
-        self.assertTrue(self.user.bettor.credits, 1000)
+        self.assertEqual(self.user.bettor.credits, 1000)
 
     def test_credits_win_one(self):
         Transaction(bet=self.b2, bettor=self.user.bettor, wager=1000).save()
-        self.assertTrue(self.user.bettor.credits, 2000)
+        self.assertEqual(self.user.bettor.credits, 1000*4)
 
     def test_credits_win_two(self):
         Transaction(bet=self.b2, bettor=self.user.bettor, wager=500).save()
-        self.assertTrue(self.user.bettor.credits, 500+500*2)
+        self.assertEqual(self.user.bettor.credits, 500+500*4)
+
+    def test_credits_win_three(self):
+        Transaction(bet=self.b2, bettor=self.user.bettor, wager=200).save()
+        Transaction(bet=self.b2, bettor=self.user.bettor, wager=200).save()
+        self.assertEqual(self.user.bettor.credits, 1000-400+400*4)
 
     def test_credits_loss_one(self):
         Transaction(bet=self.b1, bettor=self.user.bettor, wager=500).save()
-        self.assertTrue(self.user.bettor.credits, 500)
+        self.assertEqual(self.user.bettor.credits, 500)
 
     def test_credits_loss_two(self):
-        Transaction(bet=self.b2, bettor=self.user.bettor, wager=1000).save()
-        self.assertTrue(self.user.bettor.credits, 0)
+        Transaction(bet=self.b1, bettor=self.user.bettor, wager=1000).save()
+        self.assertEqual(self.user.bettor.credits, 0)
 
     def test_credits_invalid_wager(self):
         with self.assertRaises(ValidationError):
@@ -60,5 +65,5 @@ class BaseTestCase(TestCase):
         Transaction(bet=self.b1, bettor=self.user.bettor, wager=1000).save()
         Transaction(bet=self.b2, bettor=u2.bettor, wager=1000).save()
         qs = Bettor.objects.all()
-        self.assertTrue(qs[0].id, u2.bettor.id)
-        self.assertTrue(qs[1].id, self.user.bettor.id)
+        self.assertEqual(qs[0].id, u2.bettor.id)
+        self.assertEqual(qs[1].id, self.user.bettor.id)
