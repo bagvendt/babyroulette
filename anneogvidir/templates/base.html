@@ -1,0 +1,109 @@
+{% load static %} {% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %} {% load staticfiles %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <title>Babyrouletten</title>
+    <style>
+        body {
+            font-size: 16px;
+            line-height: 1.6em;
+        }
+
+        .round {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        a {
+            color: rgb(59, 194, 186);
+        }
+
+        .btn-primary,
+        .btn-primary:hover {
+            background-color: rgb(59, 194, 186);
+            border: none;
+        }
+
+        .credits {
+            text-align: center;
+            margin: 0 0 60px 0;
+            font-size: 18px;
+        }
+        .betrow {
+            margin: 10px;
+        }
+
+        h1 {
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        body {
+            background-color: #6b92b9;
+        }
+        .logo {
+            max-height: 33vh;
+            padding: 20px;
+            margin: 0 auto;
+        }
+
+        .me a {
+            color: black !important;
+        }
+
+        footer {
+            height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    {% block navbar %}
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="{% url "landing" %}">Babyrouletten</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "landing" %}">Hjem</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'manual' %}">Manual</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'transactions' pk=user.bettor.pk %}">Mine væddemål</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'leaderboard' %}">Pointtavle</a>
+                    </li>
+                </ul>
+                <div class="form-inline my-2 my-lg-0">
+                    <a href="{% url 'transactions' pk=user.bettor.pk %}">{{ user }} // Resterende jetoner: {{ user.bettor.credits }}</a>
+                </div>
+            </div>
+        </nav>
+    {% endblock %}
+
+    <div class="container">
+        <div class="row">
+        {% block logo %}
+            <img class="logo img-fluid" src="{% static "logo.png" %}"  />
+        {% endblock %}
+        </div>
+        {% block content %}{% endblock %}
+    </div>
+    <footer>
+
+    </footer>
+</body>
+
+</html>
