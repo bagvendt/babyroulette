@@ -63,7 +63,7 @@ class Leaderboard(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self):
         context = super().get_context_data()
-        context['bettors'] = models.Bettor.objects.all().select_related('user')
+        context['bettors'] = models.Bettor.objects.filter(user__is_active=True).select_related('user')
         return context
 
 
